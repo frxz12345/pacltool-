@@ -292,25 +292,27 @@ def will_v0(folder, newarcfolder, newarc):
 
 
 # will_v0('E:\Program Files (x86)\WillPlus\LoveSplit\Rio\\','E:\Program Files (x86)\WillPlus\LoveSplit\\','')
-def yatagarasu(cn, msg, key, newarc, oldarc):
+def yatagarasu(cn, msg, oldarc, newarc):
+    def get_key(msg,oldarc):
+        fo = open(msg+oldarc, 'rb')
+        b = fo.read(0x10C + 4)
+        fo.close()
+        key = b[0x84:0x84 + 4]
+        key2 = b[0x10C:0x10C + 4]
+        if key2 != key:
+            return ''
+        return key
     cn = not_folder(cn)
     files = os.listdir(cn)
     filecount = len(files)
+    key = get_key(msg,oldarc)
     if key:
         if type(key) != bytes:
             key = bytes.fromhex(key)
         f = open(msg + newarc, 'wb')
     else:
         key = []
-    if oldarc:
-        f = open(msg + oldarc, 'rb')
-        f.read(0X84)
-        key1 = f.read(4)
-        f.seek(0)
-        f.read(0X10C)
-        key2 = f.read(4)
-        if key1 == key2:
-            key = key1
+    f = open(msg+newarc, 'wb')
     f.write(struct.pack('I', 0))
     pos = 8 + filecount * 136 + 4
     data = b'' + struct.pack('I', filecount)
@@ -355,7 +357,7 @@ def yatagarasu(cn, msg, key, newarc, oldarc):
     f.close()
 
 
-# yatagarasu('./CN','./','FFFFFFFF','A.PKG','B.PKG')
+# yatagarasu(r'E:\Program Files (x86)\yatagarasu\闇夜に踊れDATA\11\010\\',r'E:\Program Files (x86)\yatagarasu\闇夜に踊れDATA\11\\','yamiP101_010.pkg','yamiP101_010_new.pkg')
 def yatagarasu_v2(cn, msg, key, newarc):
     pass
 
